@@ -113,3 +113,40 @@ def fetch_player_agent_stats_by_id(id: int, agent_history_time: str="60d"):
     cache.set(f'player_agent {id}', cached_data, expires=cache_expiry)
     return data
 
+
+
+@helper.enforce_types
+def fetch_player_stats_by_match_by_id(id: int, by_map: bool=True):
+    
+    # Checking to see whether or not cached information for this exists. If so, return that.
+    # cached_data = cache.get(f'player_matches_stats {id}')
+    # if cached_data:
+    #     return cached_data
+    
+    res = requests.get(f"https://vlr.gg/player/matches/{id}")
+    
+    if "text/html" not in res.headers.get("Content-Type", ""):
+        raise helper.InvalidContentTypeException(f"Expected text/html but got {res.headers.get("Content-Type", "")}")
+    if res.status_code != 200 and res.status_code != 404:
+        raise RuntimeError(f"Request failed with status code: {res.status_code}")
+    if "Page not found" in res.text:
+        raise helper.InvalidPlayerException(f"Player with id {str(id)} does not exist")
+    
+    soup = BeautifulSoup(res.text, "html.parser")
+    matches = []
+    page_count = 1
+    pages = soup.find('div', class_="action-container-pages").find_all('a')[-1].text
+    if pages:
+        page_count = int(pages)
+    
+    for i in range(page_count):
+        all_matches = soup.find_all('a', class_="wf-card fc-flex m-item")
+        for match in all_matches:
+            matches.append(match['href'])
+        res = requests.get(f"https://vlr.gg/player/matches/{id}/?page={i}")
+        soup = BeautifulSoup(res.text, "html.parser")
+    
+    
+    #def fetch_match_stats(player: str):
+        
+fetch_player_stats_by_match_by_id(15500)
