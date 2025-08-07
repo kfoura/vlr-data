@@ -2,7 +2,7 @@ import cache
 
 cache = cache.Cache()
 
-cache.set("example key", "example value")
+cache.set("example key", {"more": "examples"})
 
-print(cache.get("example key"))
+print(cache.get("example key")['more'])
 print(cache.get("unexistent"))

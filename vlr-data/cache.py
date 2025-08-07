@@ -1,6 +1,9 @@
 import os
 import redis
 import json
+from dotenv import load_dotenv
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env'))
+
 
 class Cache:
     def __init__(self):
@@ -11,6 +14,7 @@ class Cache:
         else:
             self.client = {}
             self.use_redis = False
+        
     
     def get(self, key):
         if self.use_redis:

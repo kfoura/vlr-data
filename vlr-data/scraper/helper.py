@@ -30,3 +30,7 @@ class InvalidPlayerException(Exception):
 class NoNameException(Exception):
     '''Raised when a player page has no name associated with it'''
     pass
+
+class DataNotFoundException(Exception):
+    '''Raised when data could not be found for a given method'''
+    pass
