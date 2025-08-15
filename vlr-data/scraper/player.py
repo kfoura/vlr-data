@@ -127,9 +127,9 @@ def fetch_player_agent_stats_by_id(id: int, agent_history_time: str="60d"):
 def fetch_player_stats_by_match_by_id(id: int):
     
     # Checking to see whether or not cached information for this exists. If so, return that.
-    # cached_data = cache.get(f'player_matches_stats {id}')
-    # if cached_data:
-    #     return cached_data
+    cached_data = cache.get(f'player_matches_stats {id}')
+    if cached_data:
+        return cached_data
     player_username = fetch_player_agent_stats_by_id(id).get("username")
     team_name = fetch_player_agent_stats_by_id(id).get("team")
     res = requests.get(f"https://vlr.gg/player/matches/{id}")
@@ -181,11 +181,14 @@ def fetch_player_stats_by_match_by_id(id: int):
             agent = m.find_all("div", attrs={"style": "overflow-x: auto; margin-top: 15px; padding-bottom: 5px;"}) 
             
             team_stats_idx = [x for x in range(len(team_stats)) if player_username in team_stats[x].get_text()][0]
-            agent = agent[team_stats_idx].find_all('td', class_="mod-player")
-            agent = [x for x in agent if player_username.lower() in x.get_text().lower()][0]
-            agent = agent.find_parent('tr')
-            agent = agent.find('td', class_="mod-agents").find('img').get('title')
-            data['agent'] = agent
+            try:
+                agent = agent[team_stats_idx].find_all('td', class_="mod-player")
+                agent = [x for x in agent if player_username.lower() in x.get_text().lower()][0]
+                agent = agent.find_parent('tr')
+                agent = agent.find('td', class_="mod-agents").find('img').get('title')
+                data['agent'] = agent
+            except AttributeError:
+                continue
             team_stats = team_stats[team_stats_idx].get_text().split()
             idx = team_stats.index(player_username)
             try:
@@ -243,10 +246,11 @@ def fetch_player_stats_by_match_by_id(id: int):
     cache.set(f'player_matches_stats {id}', result, expires=cache_expiry)
         
 # start = time.time()
-x = fetch_player_stats_by_match_by_id(15500)
+# x = fetch_player_stats_by_match_by_id(15500)
 # end = time.time()
 # print(f"Time taken: {end - start} seconds")
-
+# time_taken = end - start
+# print(f"{100 * ((144.739 - time_taken) / 144.739)}%")
 
 # def flatten_dict(d, parent_key='', sep='_'):
 #     items = {}
@@ -258,7 +262,8 @@ x = fetch_player_stats_by_match_by_id(15500)
 #             items[new_key] = v
 #     return items
 
-# flat_data = [flatten_dict(y) for y in x]
+# print(x)
+# flat_data = [flatten_dict(y) for y in x if x and y]
 
 # fieldnames = flatten_dict(x[0]).keys()
 
