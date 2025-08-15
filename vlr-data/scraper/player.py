@@ -236,31 +236,27 @@ def fetch_player_stats_by_match_by_id(id: int):
             result.append(data)
     cache.set(f'player_matches_stats {id}', result, expires=cache_expiry)
         
-start = time.time()
-x = fetch_player_stats_by_match_by_id(15500)
-end = time.time()
-print(f"Time taken: {end - start} seconds")
-start = time.time()
-x = fetch_player_agent_stats_by_id(15500)
-end = time.time()
-print(f"Time taken: {end - start} seconds")
+# start = time.time()
+# x = fetch_player_stats_by_match_by_id(15500)
+# end = time.time()
+# print(f"Time taken: {end - start} seconds")
 
 
-def flatten_dict(d, parent_key='', sep='_'):
-    items = {}
-    for k, v in d.items():
-        new_key = f"{parent_key}{sep}{k}" if parent_key else k
-        if isinstance(v, dict):
-            items.update(flatten_dict(v, new_key, sep=sep))
-        else:
-            items[new_key] = v
-    return items
+# def flatten_dict(d, parent_key='', sep='_'):
+#     items = {}
+#     for k, v in d.items():
+#         new_key = f"{parent_key}{sep}{k}" if parent_key else k
+#         if isinstance(v, dict):
+#             items.update(flatten_dict(v, new_key, sep=sep))
+#         else:
+#             items[new_key] = v
+#     return items
 
-flat_data = [flatten_dict(x) for x in x]
+# flat_data = [flatten_dict(y) for y in x]
 
-fieldnames = flatten_dict(x[0]).keys()
+# fieldnames = flatten_dict(x[0]).keys()
 
-with open('player_stats.csv', 'w', encoding='utf-8') as f:
-    writer = csv.DictWriter(f, fieldnames=fieldnames)
-    writer.writeheader()
-    writer.writerows(flat_data)
+# with open('player_stats.csv', 'w', encoding='utf-8') as f:
+#     writer = csv.DictWriter(f, fieldnames=fieldnames)
+#     writer.writeheader()
+#     writer.writerows(flat_data)
