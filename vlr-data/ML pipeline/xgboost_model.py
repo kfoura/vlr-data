@@ -5,6 +5,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 import xgboost as xgb
 from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import r2_score
 import numpy as np
 
 df = pd.read_csv(r"C:\Users\kauda\Documents\Coding\vlr-data\vlr-data\ML pipeline\player_stats.csv")
@@ -96,8 +97,15 @@ y_pred = pipeline.predict(X_test)
 epsilon = 1e-6
 mae = mean_absolute_error(y_test, y_pred)
 mape = np.mean(np.abs((y_test - y_pred) / (y_test + epsilon))) * 100
+avg = df["all_Kills"].mean()
+baseline_preds = [avg] * len(df)
+baseline_mae = mean_absolute_error(df["all_Kills"], baseline_preds)
+improvement = (baseline_mae - mae) / baseline_mae * 100
+r2 = r2_score(y_test, y_pred)
+print(f"R-squared score: {r2:.2f}")
 print(f"Mean absolute Error: {mae:.2f} kills")
 print(f"Mean Absolute Percentage Error: {mape:.2f}%")
+print(f"Accuracy improvement: {improvement:.2f}%")
 
 # --------------------
 # Output projected kills
